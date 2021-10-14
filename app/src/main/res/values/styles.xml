@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="MyRatingBar" parent="Theme.AppCompat">
+        <item name="colorAccent">@color/pink</item>
+    </style>
+
+    <style name="AppThemeRatingBar" parent="Widget.AppCompat.RatingBar.Small">
+        <item name="ratingBarStyle">@style/MyRatingBar</item>
+    </style>
+
+</resources>

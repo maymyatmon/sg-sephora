@@ -6,11 +6,14 @@ data class Product(
     val type: String,
     val id: Int = 0,
     val attributes: Attribute,
+    val relationships: Relationship,
 ) {
     data class Attribute(
         val name: String,
         val heading: String,
         val rating: String,
+        @SerializedName("image-urls")
+        val imageUrls: ArrayList<String>,
         @SerializedName("how-to-text")
         val text: String,
         val description: String,
@@ -21,9 +24,23 @@ data class Product(
         val originalPrice: Double,
         @SerializedName("under-sale")
         val isSale: Boolean,
-        @SerializedName("sale-text")
-        val saleDescription: Boolean,
-        @SerializedName("sold-out")
-        val isSoldOut: Boolean,
-        )
+        @SerializedName("variants-count")
+        val variantCount: Int,
+        @SerializedName("option-type-categories")
+        val variantType: ArrayList<String>,
+
+    )
+
+    data class Relationship(
+        val brand: Brand,
+    )
+
+    data class Brand(
+        val data: BrandData,
+    )
+
+    data class BrandData(
+        val type: String,
+        val id: Int,
+    )
 }
