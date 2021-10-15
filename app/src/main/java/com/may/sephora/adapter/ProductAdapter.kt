@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.may.sephora.R
 import com.may.sephora.model.Included
 import com.may.sephora.model.Product
+import java.util.jar.Attributes
 
 class ProductAdapter(
     private val context: Context,
@@ -34,7 +35,7 @@ class ProductAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        // create a new view
+
         val adapterLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.layout_product_item, parent, false)
 
@@ -43,21 +44,22 @@ class ProductAdapter(
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val product = productList[position]
+        val attributes = product.attributes
 
-        val url = product.attributes.imageUrls[0]
+        val url = attributes.imageUrls[0]
         if (!url.isNullOrEmpty())
             Glide.with(context).load(url).into(holder.imageView)
 
         holder.txtBrand.text = getBrand(product)
 
-        holder.txtName.text = product.attributes.name
+        holder.txtName.text = attributes.name
 
-        bindPrice(product, holder)
+        bindPrice(attributes, holder)
 
-        holder.ratingBar.rating = product.attributes.rating.toFloat()
+        holder.ratingBar.rating = attributes.rating.toFloat()
 
-        val variantCount = product.attributes.variantCount
-        var variantType = product.attributes.variantType[0]
+        val variantCount = attributes.variantCount
+        var variantType = attributes.variantType[0]
         if (variantCount > 1) variantType += "s"
         holder.txtVariants.text = "$variantCount $variantType"
 
@@ -73,23 +75,22 @@ class ProductAdapter(
         return included.attributes.name
     }
 
-    private fun bindPrice(product: Product, holder: ItemViewHolder) {
-        val originalPrice = product.attributes.originalPrice
-        if (product.attributes.isSale) {
-            val price = product.attributes.price
+    private fun bindPrice(attributes: Product.Attribute, holder: ItemViewHolder) {
+        val originalPrice = attributes.originalPrice
+        val price = attributes.price
+        if (attributes.isSale) {
             val percentage = (originalPrice - price) / originalPrice * 100
 
-            holder.txtOriginalPrice.text = "$$originalPrice"
+            holder.txtOriginalPrice.text = String.format("\$%.2f", originalPrice)
             holder.txtOriginalPrice.paintFlags =
                 holder.txtOriginalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-            holder.txtPrice.text = "$$price"
+            holder.txtPrice.text = String.format("\$%.2f", price)
             holder.txtPercentage.text = "(-${percentage.toInt()}%)"
         } else {
-            holder.txtOriginalPrice.text = "$ $originalPrice"
+            holder.txtOriginalPrice.text = String.format("\$%.2f", price)
             holder.txtOriginalPrice.typeface = Typeface.DEFAULT_BOLD
         }
     }
-
 
     override fun getItemCount() = productList.size
 }

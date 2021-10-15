@@ -9,26 +9,31 @@ import android.view.ViewGroup
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.may.sephora.R
 import com.may.sephora.adapter.ImageCarouselAdapter
+import com.may.sephora.adapter.ThumbnailAdapter
+import com.may.sephora.adapter.ThumbnailClickListener
 import com.may.sephora.model.Included
 import com.may.sephora.model.Product
 import com.may.sephora.viewmodel.MainViewModel
 
-
 private const val ARG_PARAM1 = "id"
 private const val ARG_PARAM2 = "brand"
 
-class ProductDetailsFragment : Fragment() {
+class ProductDetailsFragment : Fragment(), ThumbnailClickListener {
     private var id: Int? = 0
     private var brand: String? = null
+    private lateinit var viewPager: ViewPager
+    lateinit var thumbnailAdapter: ThumbnailAdapter
 
-    lateinit var mainViewModel: MainViewModel
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,11 +48,11 @@ class ProductDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_product_details, container, false)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
 
         (activity as AppCompatActivity).supportActionBar?.title = brand
 
@@ -55,7 +60,8 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private fun bindData(view: View) {
-        val viewPager: ViewPager = view.findViewById(R.id.viewPager)
+        viewPager = view.findViewById(R.id.viewPager)
+        val thumbnailRecyclerView = view.findViewById<RecyclerView>(R.id.thumbnailRecyclerView)
         val txtBrand: TextView = view.findViewById(R.id.txtBrand)
         val txtName: TextView = view.findViewById(R.id.txtName)
         val txtOriginalPrice: TextView = view.findViewById(R.id.txtOriginalPrice)
@@ -67,23 +73,41 @@ class ProductDetailsFragment : Fragment() {
         val txtIngredients: TextView = view.findViewById(R.id.txtIngredients)
         val txtHowTo: TextView = view.findViewById(R.id.txtHowTo)
 
-        mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        this.mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         mainViewModel.getProducts()!!.observe(this, Observer { responseData ->
 
             val list = responseData.data.filter { it.id == id }
             val product = list[0]
             val productAttributes = product.attributes
 
-            var imageCarouselAdapter =
+            //Photo carousel
+            val imageCarouselAdapter =
                 ImageCarouselAdapter(view.context, productAttributes.imageUrls)
             viewPager.adapter = imageCarouselAdapter
+            viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+
+                override fun onPageScrollStateChanged(state: Int) {
+                }
+
+                override fun onPageScrolled(
+                    position: Int,
+                    positionOffset: Float,
+                    positionOffsetPixels: Int
+                ) {
+                }
+
+                override fun onPageSelected(position: Int) {
+                    thumbnailAdapter.updateSelectedIndex(position)
+                }
+            })
+
+            //photo thumbnail
+            thumbnailAdapter = ThumbnailAdapter(view.context, productAttributes.thumbnailUrls, this)
+            thumbnailRecyclerView.adapter = thumbnailAdapter
 
             txtBrand.text = getBrand(product, responseData.included)
-
             txtName.text = productAttributes.name
-
             bindPrice(productAttributes, txtOriginalPrice, txtPrice, txtPercentage)
-
             ratingBar.rating = productAttributes.rating.toFloat()
 
             setDescription(txtDescription, productAttributes.description)
@@ -92,6 +116,11 @@ class ProductDetailsFragment : Fragment() {
             setDescription(txtHowTo, productAttributes.howTo)
 
         })
+    }
+
+    override fun onThumbnailClick(position: Int) {
+        thumbnailAdapter.updateSelectedIndex(position)
+        viewPager.setCurrentItem(position, true)
     }
 
     private fun setDescription(textView: TextView, text: String) {
@@ -112,16 +141,16 @@ class ProductDetailsFragment : Fragment() {
         txtPercentage: TextView
     ) {
         val originalPrice = productAttributes.originalPrice
+        val price = productAttributes.price
         if (productAttributes.isSale) {
-            val price = productAttributes.price
             val percentage = (originalPrice - price) / originalPrice * 100
 
-            txtOriginalPrice.text = "$$originalPrice"
+            txtOriginalPrice.text = String.format("\$%.2f", originalPrice)
             txtOriginalPrice.paintFlags = txtOriginalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-            txtPrice.text = "$$price"
+            txtPrice.text = String.format("\$%.2f", price)
             txtPercentage.text = "(-${percentage.toInt()}%)"
         } else {
-            txtOriginalPrice.text = "$ $originalPrice"
+            txtOriginalPrice.text = String.format("\$%.2f", price)
             txtOriginalPrice.typeface = Typeface.DEFAULT_BOLD
         }
     }

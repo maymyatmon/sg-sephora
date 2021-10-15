@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,7 +17,6 @@ import com.may.sephora.adapter.ItemClickListener
 import com.may.sephora.adapter.ProductAdapter
 import com.may.sephora.model.Product
 import com.may.sephora.viewmodel.MainViewModel
-
 
 class ProductListFragment : Fragment(), ItemClickListener {
 
@@ -32,8 +32,10 @@ class ProductListFragment : Fragment(), ItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val txtTotal = view.findViewById<TextView>(R.id.txt_total)
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
+        (activity as AppCompatActivity).supportActionBar?.title = "Sephora"
+
+        val txtTotal = view.findViewById<TextView>(R.id.txtTotal)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
 
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         mainViewModel.getProducts()!!.observe(this, Observer { responseData ->

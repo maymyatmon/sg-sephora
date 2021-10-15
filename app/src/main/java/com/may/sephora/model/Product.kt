@@ -13,6 +13,8 @@ data class Product(
         val rating: String,
         @SerializedName("image-urls")
         val imageUrls: ArrayList<String>,
+        @SerializedName("icon-image-urls")
+        val thumbnailUrls: ArrayList<String>,
         val description: String,
         val benefits: String,
         val ingredients: String,

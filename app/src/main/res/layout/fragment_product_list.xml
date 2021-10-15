@@ -9,7 +9,7 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/txt_total"
+        android:id="@+id/txtTotal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
@@ -24,7 +24,7 @@
         android:background="@color/light_gray" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="10dp"
@@ -32,4 +32,6 @@
         android:paddingTop="10dp"
         android:scrollbars="none"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
+
 </LinearLayout>
+
