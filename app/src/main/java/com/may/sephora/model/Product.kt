@@ -10,15 +10,14 @@ data class Product(
 ) {
     data class Attribute(
         val name: String,
-        val heading: String,
         val rating: String,
         @SerializedName("image-urls")
         val imageUrls: ArrayList<String>,
-        @SerializedName("how-to-text")
-        val text: String,
         val description: String,
         val benefits: String,
         val ingredients: String,
+        @SerializedName("how-to-text")
+        val howTo: String,
         val price: Double,
         @SerializedName("original-price")
         val originalPrice: Double,

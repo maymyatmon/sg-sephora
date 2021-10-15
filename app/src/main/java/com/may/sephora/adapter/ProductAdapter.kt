@@ -46,7 +46,7 @@ class ProductAdapter(
 
         val url = product.attributes.imageUrls[0]
         if (!url.isNullOrEmpty())
-            Glide.with(context).load(product.attributes.imageUrls[0]).into(holder.imageView)
+            Glide.with(context).load(url).into(holder.imageView)
 
         holder.txtBrand.text = getBrand(product)
 
