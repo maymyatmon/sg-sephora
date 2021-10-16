@@ -3,6 +3,7 @@ package com.may.sephora.view
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -32,7 +33,10 @@ class ProductListFragment : Fragment(), ItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as AppCompatActivity).supportActionBar?.title = "Sephora"
+        val actionbar = (activity as AppCompatActivity).supportActionBar
+        //set actionbar title
+        actionbar!!.title = "Sephora"
+        actionbar.setDisplayHomeAsUpEnabled(false)
 
         val txtTotal = view.findViewById<TextView>(R.id.txtTotal)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
@@ -50,6 +54,17 @@ class ProductListFragment : Fragment(), ItemClickListener {
                 ProductAdapter(view.context, productList, responseData.included, this)
 
         })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle presses on the action bar menu items
+        when (item.itemId) {
+            android.R.id.home -> {
+                activity?.onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onItemClick(product: Product, brand: String) {

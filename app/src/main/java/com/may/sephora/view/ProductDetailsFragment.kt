@@ -54,7 +54,10 @@ class ProductDetailsFragment : Fragment(), ThumbnailClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as AppCompatActivity).supportActionBar?.title = brand
+        val actionbar = (activity as AppCompatActivity).supportActionBar
+        //set actionbar title
+        actionbar!!.title = brand
+        actionbar.setDisplayHomeAsUpEnabled(true)
 
         bindData(view)
     }
