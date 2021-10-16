@@ -1,23 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutPrice"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    app:flexWrap="wrap">
 
     <TextView
         android:id="@+id/txtOriginalPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingEnd="5dp"
         android:textColor="@color/dark_gray"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        tools:ignore="RtlSymmetry" />
 
     <TextView
         android:id="@+id/txtPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
         android:textColor="@color/black"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -27,10 +30,8 @@
         android:id="@+id/txtPercentage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="5dp"
         android:textColor="@color/pink"
-        android:textStyle="bold"
         android:textSize="16sp"
-        tools:ignore="RtlSymmetry" />
+        android:textStyle="bold" />
 
-</LinearLayout>
+</com.google.android.flexbox.FlexboxLayout>

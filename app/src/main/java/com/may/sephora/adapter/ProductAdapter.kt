@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.may.sephora.R
 import com.may.sephora.model.Included
 import com.may.sephora.model.Product
+import com.may.sephora.view.ProductHelper
 import java.util.jar.Attributes
 
 class ProductAdapter(
@@ -50,11 +51,22 @@ class ProductAdapter(
         if (!url.isNullOrEmpty())
             Glide.with(context).load(url).into(holder.imageView)
 
-        holder.txtBrand.text = getBrand(product)
+        holder.txtBrand.text = ProductHelper.getBrand(product, includedList)
 
         holder.txtName.text = attributes.name
 
-        bindPrice(attributes, holder)
+        val originalPrice = attributes.originalPrice
+        val price = attributes.price
+        if (attributes.isSale) {
+            holder.txtOriginalPrice.text = ProductHelper.getFormattedPrice(originalPrice)
+            holder.txtOriginalPrice.paintFlags =
+                holder.txtOriginalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            holder.txtPrice.text = ProductHelper.getFormattedPrice(price)
+            holder.txtPercentage.text = "(-${ProductHelper.getPercentage(originalPrice, price)}%)"
+        } else {
+            holder.txtOriginalPrice.text = ProductHelper.getFormattedPrice(price)
+            holder.txtOriginalPrice.typeface = Typeface.DEFAULT_BOLD
+        }
 
         holder.ratingBar.rating = attributes.rating.toFloat()
 
@@ -65,30 +77,6 @@ class ProductAdapter(
 
         holder.itemView.setOnClickListener {
             itemClickListener.onItemClick(product, holder.txtBrand.text.toString())
-        }
-    }
-
-    private fun getBrand(product: Product): String {
-        val list =
-            includedList.filter { it.type == product.relationships.brand.data.type && it.id == product.relationships.brand.data.id }
-        val included = list[0]
-        return included.attributes.name
-    }
-
-    private fun bindPrice(attributes: Product.Attribute, holder: ItemViewHolder) {
-        val originalPrice = attributes.originalPrice
-        val price = attributes.price
-        if (attributes.isSale) {
-            val percentage = (originalPrice - price) / originalPrice * 100
-
-            holder.txtOriginalPrice.text = String.format("\$%.2f", originalPrice)
-            holder.txtOriginalPrice.paintFlags =
-                holder.txtOriginalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-            holder.txtPrice.text = String.format("\$%.2f", price)
-            holder.txtPercentage.text = "(-${percentage.toInt()}%)"
-        } else {
-            holder.txtOriginalPrice.text = String.format("\$%.2f", price)
-            holder.txtOriginalPrice.typeface = Typeface.DEFAULT_BOLD
         }
     }
 
